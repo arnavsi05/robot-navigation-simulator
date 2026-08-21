@@ -4,19 +4,13 @@ A Python-based 2D navigation simulator for a grid-world mobile robot. It plans c
 
 ## Overview
 
-Imagine a warehouse robot with a map of every shelf and wall. It can plan a perfect route from A to B — until another robot, a person, or a forklift crosses its path. A useful navigation stack has to do two things: find a good path through a known map, and notice quickly when that path stops being valid so it can find a new one.
-
-This project implements both halves of that problem on a 2D occupancy grid: static path planning (A* and Dijkstra) and a simulation loop that moves a robot and independently-moving "dynamic obstacles" through time, replanning whenever an obstacle steps onto the robot's route.
+This project implements finding a good path through a map and quickly determining when a path stops being valid on a 2D occupancy grid: static path planning (A* and Dijkstra) and a simulation loop that moves a robot and independently-moving "dynamic obstacles" through time, replanning whenever an obstacle steps onto the robot's route.
 
 ## Demo
 
 ![Dynamic obstacle replanning demo](results/dynamic_replanning.gif)
 
 The dashed line is the robot's original plan; the solid blue line is its current plan. Red squares are dynamic obstacles patrolling fixed routes. When one steps onto the planned path, the robot replans from its current position and continues.
-
-## Motivation
-
-Real environments change after a map is drawn. A fixed path is only safe until something moves into it, so any mobile robot operating around people, vehicles, or other robots needs to (1) plan efficiently over a large search space and (2) detect path invalidation and replan fast enough to stay safe. This project is a from-scratch, dependency-light implementation of that pattern, built to demonstrate the core algorithms and system structure rather than to compete with production stacks like Nav2.
 
 ## System Architecture
 
@@ -169,25 +163,6 @@ In the dynamic scenario, patrolling obstacles forced an average of **2.4 replann
 ![Static navigation](results/static_navigation.png)
 ![Algorithm comparison](results/algorithm_comparison.png)
 
-## What I Learned
-
-Building this project reinforced a few ideas that are easy to state abstractly but click differently once implemented:
-
-- **Occupancy grids** are a blunt but effective world representation — trivial to reason about and to check collisions against, at the cost of memory that scales with resolution and no notion of continuous space.
-- **Graph search vs. heuristic search** is really about where you spend your compute. Dijkstra explores uniformly in all directions; A* spends that same compute biased toward the goal, and the node-expansion counts in my benchmarks make that difference concrete rather than theoretical.
-- **Admissibility matters.** I used the octile distance (exact cost on an unobstructed 8-connected grid) specifically because it never overestimates true cost, which is what keeps A*'s result optimal rather than just fast.
-- **Collision checking** for a moving obstacle is not the same problem as static collision checking — I ended up "snapshotting" each dynamic obstacle's current cell into the grid at planning time rather than trying to reason about future obstacle positions, which is simpler but has real limitations (see below).
-- **Replanning is a systems problem, not just an algorithms problem.** Getting a robot to smoothly recover from an invalidated path required careful state management between the robot's path index, the environment's obstacle positions, and when exactly to trigger a new planning call — most of the subtlety was here, not in the search algorithms themselves.
-- **Simulation and evaluation** need to be designed together. Building the benchmarking harness (seeded, solvability-checked random environments; consistent metrics across trials) mattered as much as the planners for producing results I could actually trust.
-
-## Limitations
-
-- The environment is a discretized 2D grid, not a continuous space — the robot's motion is not represented with real kinematics or dynamics.
-- The robot moves cell-by-cell with no acceleration/velocity limits, turning radius, or physical footprint beyond a single cell.
-- Dynamic obstacles follow simple, predefined patrol routes rather than reactive or learned behavior, and the robot has no way to predict where they will be beyond their current position.
-- Replanning uses a "snapshot" of obstacle positions at the moment of replanning rather than forecasting future obstacle motion, so it can react to a blockage but not anticipate one.
-- There is no sensor model or sensor noise — the robot has perfect, instantaneous knowledge of the full grid and every obstacle's exact position.
-- Not integrated with ROS 2, Gazebo/Isaac Sim, or any physical hardware; this is a self-contained simulation.
 
 ## Future Work
 
