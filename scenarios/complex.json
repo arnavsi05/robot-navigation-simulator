@@ -1,0 +1,19 @@
+{
+  "name": "complex",
+  "description": "Larger grid with a maze-like arrangement of walls (each with a gap) plus scattered random clutter. Requires nontrivial route-finding.",
+  "width": 40,
+  "height": 30,
+  "seed": 7,
+  "start": [1, 1],
+  "goal": [28, 38],
+  "obstacle_rects": [
+    { "top_left": [0, 6], "bottom_right": [20, 8] },
+    { "top_left": [24, 6], "bottom_right": [29, 8] },
+    { "top_left": [8, 14], "bottom_right": [29, 16] },
+    { "top_left": [0, 14], "bottom_right": [4, 16] },
+    { "top_left": [0, 22], "bottom_right": [20, 24] },
+    { "top_left": [24, 22], "bottom_right": [29, 24] },
+    { "top_left": [5, 30], "bottom_right": [25, 32] }
+  ],
+  "random_obstacle_density": 0.03
+}

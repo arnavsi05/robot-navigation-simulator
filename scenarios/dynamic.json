@@ -1,0 +1,24 @@
+{
+  "name": "dynamic",
+  "description": "Corridor environment with static obstacles plus a dynamic obstacle patrolling back and forth across the robot's most direct route, forcing at least one replan.",
+  "width": 30,
+  "height": 20,
+  "seed": 3,
+  "start": [1, 1],
+  "goal": [18, 28],
+  "obstacle_rects": [
+    { "top_left": [4, 6], "bottom_right": [14, 8] },
+    { "top_left": [2, 15], "bottom_right": [10, 17] },
+    { "top_left": [12, 20], "bottom_right": [17, 22] }
+  ],
+  "dynamic_obstacles": [
+    {
+      "waypoints": [[0, 12], [19, 12]],
+      "speed_cells_per_step": 1
+    },
+    {
+      "waypoints": [[19, 24], [0, 24]],
+      "speed_cells_per_step": 1
+    }
+  ]
+}
